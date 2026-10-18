@@ -1,0 +1,384 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		04439C726CA978DC7A69C1AE /* CameraPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC83EB02046BAC361C67EF37 /* CameraPicker.swift */; };
+		0B23C0E121E9DBDB2F37472E /* InspectionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA4DA323CFA91ED489455FC6 /* InspectionViewModel.swift */; };
+		1CF93CBEB3F16EBC44389BD4 /* ModelStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = D70036B57D25E6214053A052 /* ModelStore.swift */; };
+		3B4D33C6BE11629492991605 /* AnnotatedImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1E982482731967A7D543F1E /* AnnotatedImageView.swift */; };
+		3C70845CAE7B15752F735D58 /* ModelDownloader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60DED7AF2FD4AF6B06F4F52B /* ModelDownloader.swift */; };
+		4C1654D444CE63DD2F918768 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EFF9EDB9899BA71BC0D5F7F /* ContentView.swift */; };
+		521E8EDF83D010BE59A5EB2A /* NetworkCheckerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFD1126C765769344E702B97 /* NetworkCheckerApp.swift */; };
+		68E3208739E4DC1CE6EADC3C /* prompt.txt in Resources */ = {isa = PBXBuildFile; fileRef = D56DF7066BE08CA83C2E5AB5 /* prompt.txt */; };
+		8652C627157F0F2D77CEBE4A /* LLMService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF8A1CB525DDEBB6A6A0446D /* LLMService.swift */; };
+		BD127B1D8FECEF95256C6249 /* InspectionResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97B5C1F52BE712F52F9C0679 /* InspectionResult.swift */; };
+		CA2D4C583008FAE0B0B3C30F /* ChatViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14B757F4C6E6CEEA097E3739 /* ChatViews.swift */; };
+		F80E45826919829D1146DA63 /* LiteRTLM in Frameworks */ = {isa = PBXBuildFile; productRef = 26BA9097B089A1D347E50093 /* LiteRTLM */; };
+		FCE1608B82354BEF467DB68D /* Sheets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 778785C67986B272CEA6BB61 /* Sheets.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		0A3A2F8BDE1290F270FB4708 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		14B757F4C6E6CEEA097E3739 /* ChatViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatViews.swift; sourceTree = "<group>"; };
+		47DFF190022658E7D94F7504 /* NetworkChecker.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = NetworkChecker.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		60DED7AF2FD4AF6B06F4F52B /* ModelDownloader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelDownloader.swift; sourceTree = "<group>"; };
+		778785C67986B272CEA6BB61 /* Sheets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sheets.swift; sourceTree = "<group>"; };
+		8570B660D28B2581BBF93634 /* NetworkChecker.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = NetworkChecker.entitlements; sourceTree = "<group>"; };
+		97B5C1F52BE712F52F9C0679 /* InspectionResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InspectionResult.swift; sourceTree = "<group>"; };
+		9EFF9EDB9899BA71BC0D5F7F /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		BC83EB02046BAC361C67EF37 /* CameraPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraPicker.swift; sourceTree = "<group>"; };
+		BF8A1CB525DDEBB6A6A0446D /* LLMService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMService.swift; sourceTree = "<group>"; };
+		CFD1126C765769344E702B97 /* NetworkCheckerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkCheckerApp.swift; sourceTree = "<group>"; };
+		D56DF7066BE08CA83C2E5AB5 /* prompt.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = prompt.txt; sourceTree = "<group>"; };
+		D70036B57D25E6214053A052 /* ModelStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelStore.swift; sourceTree = "<group>"; };
+		DA4DA323CFA91ED489455FC6 /* InspectionViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InspectionViewModel.swift; sourceTree = "<group>"; };
+		E1E982482731967A7D543F1E /* AnnotatedImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnnotatedImageView.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		4B43EA93E9D9C27BE107EFD5 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F80E45826919829D1146DA63 /* LiteRTLM in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		02C04ABF5CCAC80EC288F93A = {
+			isa = PBXGroup;
+			children = (
+				D56DF7066BE08CA83C2E5AB5 /* prompt.txt */,
+				B68B96562023336A72CE6840 /* NetworkChecker */,
+				7C62CCB49BC5FDAF2B79525A /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		7C62CCB49BC5FDAF2B79525A /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				47DFF190022658E7D94F7504 /* NetworkChecker.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		B68B96562023336A72CE6840 /* NetworkChecker */ = {
+			isa = PBXGroup;
+			children = (
+				E1E982482731967A7D543F1E /* AnnotatedImageView.swift */,
+				BC83EB02046BAC361C67EF37 /* CameraPicker.swift */,
+				14B757F4C6E6CEEA097E3739 /* ChatViews.swift */,
+				9EFF9EDB9899BA71BC0D5F7F /* ContentView.swift */,
+				0A3A2F8BDE1290F270FB4708 /* Info.plist */,
+				97B5C1F52BE712F52F9C0679 /* InspectionResult.swift */,
+				DA4DA323CFA91ED489455FC6 /* InspectionViewModel.swift */,
+				BF8A1CB525DDEBB6A6A0446D /* LLMService.swift */,
+				60DED7AF2FD4AF6B06F4F52B /* ModelDownloader.swift */,
+				D70036B57D25E6214053A052 /* ModelStore.swift */,
+				8570B660D28B2581BBF93634 /* NetworkChecker.entitlements */,
+				CFD1126C765769344E702B97 /* NetworkCheckerApp.swift */,
+				778785C67986B272CEA6BB61 /* Sheets.swift */,
+			);
+			path = NetworkChecker;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		B832B32475DFF2094B7BB22C /* NetworkChecker */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BA797E776A76140F0165645A /* Build configuration list for PBXNativeTarget "NetworkChecker" */;
+			buildPhases = (
+				1BAD15D9C826469E320C6208 /* Sources */,
+				BB7F26DF49C386CDD92C37B7 /* Resources */,
+				4B43EA93E9D9C27BE107EFD5 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = NetworkChecker;
+			packageProductDependencies = (
+				26BA9097B089A1D347E50093 /* LiteRTLM */,
+			);
+			productName = NetworkChecker;
+			productReference = 47DFF190022658E7D94F7504 /* NetworkChecker.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		275409E27F764A6CD0EF6A00 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					B832B32475DFF2094B7BB22C = {
+						DevelopmentTeam = VJH27C99ZX;
+					};
+				};
+			};
+			buildConfigurationList = A30708EC7A8950E37C80304B /* Build configuration list for PBXProject "NetworkChecker" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 02C04ABF5CCAC80EC288F93A;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				A5BC10F98E8886649BE79C3C /* XCRemoteSwiftPackageReference "LiteRT-LM" */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 7C62CCB49BC5FDAF2B79525A /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				B832B32475DFF2094B7BB22C /* NetworkChecker */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		BB7F26DF49C386CDD92C37B7 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				68E3208739E4DC1CE6EADC3C /* prompt.txt in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		1BAD15D9C826469E320C6208 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3B4D33C6BE11629492991605 /* AnnotatedImageView.swift in Sources */,
+				04439C726CA978DC7A69C1AE /* CameraPicker.swift in Sources */,
+				CA2D4C583008FAE0B0B3C30F /* ChatViews.swift in Sources */,
+				4C1654D444CE63DD2F918768 /* ContentView.swift in Sources */,
+				BD127B1D8FECEF95256C6249 /* InspectionResult.swift in Sources */,
+				0B23C0E121E9DBDB2F37472E /* InspectionViewModel.swift in Sources */,
+				8652C627157F0F2D77CEBE4A /* LLMService.swift in Sources */,
+				3C70845CAE7B15752F735D58 /* ModelDownloader.swift in Sources */,
+				1CF93CBEB3F16EBC44389BD4 /* ModelStore.swift in Sources */,
+				521E8EDF83D010BE59A5EB2A /* NetworkCheckerApp.swift in Sources */,
+				FCE1608B82354BEF467DB68D /* Sheets.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		3E72F15A7A50E38F4198FD94 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = NetworkChecker/NetworkChecker.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				DEVELOPMENT_TEAM = VJH27C99ZX;
+				INFOPLIST_FILE = NetworkChecker/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.dan.poc.NetworkChecker;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.10;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		AB3AAD46045C2EFC5F293886 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		E74EDCCF4D5F7AB3C941CE72 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		E7F7F75C06D15D6ECB574402 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = NetworkChecker/NetworkChecker.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				DEVELOPMENT_TEAM = VJH27C99ZX;
+				INFOPLIST_FILE = NetworkChecker/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.dan.poc.NetworkChecker;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.10;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		A30708EC7A8950E37C80304B /* Build configuration list for PBXProject "NetworkChecker" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AB3AAD46045C2EFC5F293886 /* Debug */,
+				E74EDCCF4D5F7AB3C941CE72 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		BA797E776A76140F0165645A /* Build configuration list for PBXNativeTarget "NetworkChecker" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3E72F15A7A50E38F4198FD94 /* Debug */,
+				E7F7F75C06D15D6ECB574402 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		A5BC10F98E8886649BE79C3C /* XCRemoteSwiftPackageReference "LiteRT-LM" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/google-ai-edge/LiteRT-LM";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.16.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		26BA9097B089A1D347E50093 /* LiteRTLM */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A5BC10F98E8886649BE79C3C /* XCRemoteSwiftPackageReference "LiteRT-LM" */;
+			productName = LiteRTLM;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 275409E27F764A6CD0EF6A00 /* Project object */;
+}

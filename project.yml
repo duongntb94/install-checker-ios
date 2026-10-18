@@ -1,0 +1,55 @@
+# XcodeGen spec:  brew install xcodegen && cd ios && xcodegen
+name: NetworkChecker
+options:
+  bundleIdPrefix: com.dan.poc
+  deploymentTarget:
+    iOS: "17.0"
+packages:
+  LiteRTLM:
+    url: https://github.com/google-ai-edge/LiteRT-LM
+    from: 0.16.0
+targets:
+  NetworkChecker:
+    type: application
+    platform: iOS
+    sources:
+      - path: NetworkChecker
+      - path: prompt.txt
+        buildPhase: resources
+      # Muốn bundle model sẵn vào app thay vì tải OTA (~3.6 GB, chỉ cho dev build):
+      #   copy model.litertlm vào Model/ rồi bỏ comment 2 dòng dưới, chạy lại xcodegen
+      # - path: Model/model.litertlm
+      #   buildPhase: resources
+    dependencies:
+      - package: LiteRTLM
+        product: LiteRTLM
+    entitlements:
+      path: NetworkChecker/NetworkChecker.entitlements
+      # Phải khai báo ở đây: xcodegen ghi đè file .entitlements bằng nội dung của `properties`.
+      # Nâng giới hạn RAM cho app — bắt buộc để chạy model ~3.6 GB trên iPhone 15 Pro (8 GB).
+      # extended-virtual-addressing: Personal Team (Apple ID miễn phí) không ký được -> chỉ bật khi dùng team trả phí.
+      properties:
+        com.apple.developer.kernel.increased-memory-limit: true
+    info:
+      path: NetworkChecker/Info.plist
+      properties:
+        CFBundleDisplayName: Install Checker
+        UILaunchScreen: {}
+        # Model OTA: link tải trực tiếp .litertlm (không auth). Tăng ModelVersion khi upload bản mới.
+        # Hiện tại: tải từ Mac qua Wi-Fi (xem README › Model). Đổi tên host nếu dùng Mac khác.
+        ModelDownloadURL: "http://Dans-MacBook-Pro.local:8000/model.litertlm"
+        ModelVersion: "2"
+        # Cho phép HTTP thường chỉ trong mạng LAN (IP nội bộ, *.local) để tải model từ Mac
+        NSAppTransportSecurity:
+          NSAllowsLocalNetworking: true
+        NSLocalNetworkUsageDescription: Tải model từ máy Mac trong cùng mạng Wi-Fi.
+        NSCameraUsageDescription: Chụp ảnh setup mạng để kiểm tra lỗi lắp đặt.
+        NSPhotoLibraryUsageDescription: Chọn ảnh setup mạng để kiểm tra.
+        # Cho phép copy model.litertlm vào app qua Finder / Files
+        UIFileSharingEnabled: true
+        LSSupportsOpeningDocumentsInPlace: true
+    settings:
+      base:
+        DEVELOPMENT_TEAM: VJH27C99ZX   # Personal Team của Dan
+        TARGETED_DEVICE_FAMILY: "1"
+        SWIFT_VERSION: "5.10"
