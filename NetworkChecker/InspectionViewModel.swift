@@ -29,6 +29,17 @@ struct Attachment: Identifiable {
     let image: UIImage
 }
 
+/// Engine kiểm tra ảnh. Cả hai model đều tải từ GitHub release lần đầu mở app.
+/// YOLO: Core ML ~5 MB (release `yolo-v*`). Gemma: LiteRT-LM ~3.9 GB (release `model-v*`).
+enum InspectionEngine: String, CaseIterable, Identifiable {
+    case yolo, gemma
+    var id: String { rawValue }
+    var title: String { self == .yolo ? "YOLO26n + rules" : "Gemma 4 E2B" }
+    var kind: ModelKind { self == .yolo ? .yolo : .gemma }
+    /// Cạnh dài ảnh đưa vào model — khớp lúc train (YOLO: yolo/src 1280, Gemma: prepare_dataset 896).
+    var maxSide: CGFloat { self == .yolo ? 1280 : 896 }
+}
+
 @MainActor
 @Observable
 final class InspectionViewModel {
@@ -54,8 +65,13 @@ final class InspectionViewModel {
     var canSend: Bool { modelState == .ready && !attachments.isEmpty && !isAnalyzing }
     var canAttach: Bool { modelState == .ready && !isAnalyzing }
 
+    /// Lưu lựa chọn engine giữa các lần mở app. Mặc định YOLO (model nhỏ, tải vài giây).
+    private(set) var engine: InspectionEngine =
+        InspectionEngine(rawValue: UserDefaults.standard.string(forKey: "inspectionEngine") ?? "") ?? .yolo
+
     private let llm = LLMService()
-    private let downloader = ModelDownloader.shared
+    private var detector: YOLODetector?
+    private var downloader: ModelDownloader { ModelDownloader.shared(engine.kind) }
     private var speedSample: (date: Date, bytes: Int64)?
 
     /// Prompt dùng chung với script train (prompt.txt) — phải khớp từng chữ.
@@ -70,42 +86,56 @@ final class InspectionViewModel {
     // MARK: - Model
 
     func start() async {
-        downloader.onEvent = { [weak self] event in self?.handle(event) }
-        if ModelStore.isInstalled {
-            await loadModel()
+        // Cả hai downloader đều báo về đây; handle() chỉ hiển thị sự kiện của engine đang chọn.
+        for dl in ModelDownloader.all {
+            let kind = dl.kind
+            dl.onEvent = { [weak self] event in self?.handle(event, from: kind) }
+        }
+        if ModelStore.isInstalled(engine.kind) {
+            await loadActiveModel()
         } else {
             startDownload()
         }
     }
 
     func startDownload() {
-        let needed = ModelConfig.approxBytes + 500_000_000
-        guard ModelStore.availableDiskBytes > needed else {
-            modelState = .failed("Không đủ dung lượng. Cần trống khoảng \(Self.format(bytes: needed)).")
-            return
-        }
         speedSample = nil
         downloadSpeed = 0
-        modelState = .downloading(received: 0, total: ModelConfig.approxBytes)
+        modelState = .downloading(received: 0, total: ModelConfig.approxBytes(engine.kind))
         downloader.start()
     }
 
     func pauseDownload() { downloader.pause() }
 
-    /// Xoá model OTA và tải lại (dùng trong màn Info).
+    /// Đổi engine (màn Info). Engine chưa có model thì bắt đầu tải.
+    func switchEngine(to new: InspectionEngine) async {
+        guard new != engine, !isAnalyzing else { return }
+        if case .downloading = modelState { downloader.pause() }   // tạm dừng model đang tải dở
+        engine = new
+        UserDefaults.standard.set(new.rawValue, forKey: "inspectionEngine")
+        attachments = []
+        await start()
+    }
+
+    /// Xoá model của engine đang chọn và tải lại từ GitHub (màn Info).
     func redownloadModel() async {
-        await llm.unload()
-        ModelStore.remove()
+        switch engine {
+        case .gemma: await llm.unload()
+        case .yolo: detector = nil
+        }
+        await downloader.reset()
+        ModelStore.remove(engine.kind)
         startDownload()
     }
 
-    private func handle(_ event: ModelDownloader.Event) {
+    private func handle(_ event: ModelDownloader.Event, from kind: ModelKind) {
+        guard kind == engine.kind else { return }
         switch event {
         case let .progress(received, total):
             updateSpeed(received)
             modelState = .downloading(received: received, total: total)
         case .finished:
-            Task { await loadModel() }
+            Task { await loadActiveModel() }
         case .paused:
             modelState = .paused
         case .failed(let msg):
@@ -123,11 +153,19 @@ final class InspectionViewModel {
         speedSample = (now, received)
     }
 
-    private func loadModel() async {
+    private func loadActiveModel() async {
         modelState = .loading
         let t0 = Date()
         do {
-            try await llm.load()
+            switch engine {
+            case .gemma:
+                try await llm.load()
+            case .yolo:
+                if detector == nil {
+                    let url = ModelStore.locate(.yolo)
+                    detector = try await Task.detached { try YOLODetector(modelURL: url) }.value
+                }
+            }
             modelLoadTime = Date().timeIntervalSince(t0)
             modelState = .ready
         } catch {
@@ -139,8 +177,9 @@ final class InspectionViewModel {
 
     func attach(_ images: [UIImage]) {
         // Đã đủ số ảnh thì ảnh mới thay ảnh cũ nhất (maxPhotos = 1: chọn ảnh khác là thay luôn)
-        // Chuẩn hoá orientation + resize giống bước prepare_dataset (cạnh dài 896)
-        let new = images.suffix(Self.maxPhotos).map { Attachment(image: $0.normalized(maxSide: 896)) }
+        // Chuẩn hoá orientation + resize theo engine (Gemma 896 như prepare_dataset, YOLO 1280 như yolo/src)
+        let side = engine.maxSide
+        let new = images.suffix(Self.maxPhotos).map { Attachment(image: $0.normalized(maxSide: side)) }
         attachments = Array((attachments + new).suffix(Self.maxPhotos))
     }
 
@@ -171,6 +210,23 @@ final class InspectionViewModel {
         let image = turns[ti].checks[ci].image
         let t0 = Date()
         var check = turns[ti].checks[ci]
+        if engine == .yolo {
+            do {
+                guard let detector else { throw YOLODetector.DetectorError.modelNotFound }
+                let dets = try await Task.detached { try detector.detect(image) }.value
+                let result = InstallRules.evaluate(dets, imageSize: image.size)
+                check.rawOutput = dets.map {
+                    String(format: "%@ %.2f [%.0f, %.0f, %.0f, %.0f]", $0.label, $0.confidence,
+                           $0.box.minX, $0.box.minY, $0.box.maxX, $0.box.maxY)
+                }.joined(separator: "\n")
+                check.state = .done(result)
+            } catch {
+                check.state = .failed(error.localizedDescription)
+            }
+            check.elapsed = Date().timeIntervalSince(t0)
+            turns[ti].checks[ci] = check
+            return
+        }
         do {
             let url = FileManager.default.temporaryDirectory.appendingPathComponent("\(checkID).jpg")
             try image.jpegData(compressionQuality: 0.9)?.write(to: url)

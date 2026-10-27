@@ -21,8 +21,10 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
     func application(_ application: UIApplication,
                      handleEventsForBackgroundURLSession identifier: String,
                      completionHandler: @escaping () -> Void) {
-        guard identifier == ModelDownloader.sessionID else { return completionHandler() }
-        ModelDownloader.shared.backgroundCompletionHandler = completionHandler
-        ModelDownloader.shared.reconnect()
+        guard let downloader = ModelDownloader.all.first(where: { $0.sessionID == identifier }) else {
+            return completionHandler()
+        }
+        downloader.backgroundCompletionHandler = completionHandler
+        downloader.reconnect()
     }
 }

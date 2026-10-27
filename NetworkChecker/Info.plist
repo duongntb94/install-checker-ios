@@ -20,26 +20,21 @@
 	<string>1.0</string>
 	<key>CFBundleVersion</key>
 	<string>1</string>
+	<key>GemmaModelTag</key>
+	<string>model-v2</string>
 	<key>LSSupportsOpeningDocumentsInPlace</key>
 	<true/>
-	<key>ModelDownloadURL</key>
-	<string>http://Dans-MacBook-Pro.local:8000/model.litertlm</string>
-	<key>ModelVersion</key>
-	<string>2</string>
-	<key>NSAppTransportSecurity</key>
-	<dict>
-		<key>NSAllowsLocalNetworking</key>
-		<true/>
-	</dict>
+	<key>ModelReleaseBaseURL</key>
+	<string>https://github.com/duongntb94/install-checker-ios/releases/download</string>
 	<key>NSCameraUsageDescription</key>
 	<string>Chụp ảnh setup mạng để kiểm tra lỗi lắp đặt.</string>
-	<key>NSLocalNetworkUsageDescription</key>
-	<string>Tải model từ máy Mac trong cùng mạng Wi-Fi.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Chọn ảnh setup mạng để kiểm tra.</string>
 	<key>UIFileSharingEnabled</key>
 	<true/>
 	<key>UILaunchScreen</key>
 	<dict/>
+	<key>YOLOModelTag</key>
+	<string>yolo-v1</string>
 </dict>
 </plist>

@@ -48,14 +48,39 @@ struct InfoSheet: View {
     var body: some View {
         NavigationStack {
             List {
+                Section {
+                    Picker("Engine", selection: Binding(
+                        get: { vm.engine },
+                        set: { new in Task { await vm.switchEngine(to: new) } })) {
+                        ForEach(InspectionEngine.allCases) { Text($0.title).tag($0) }
+                    }
+                    .pickerStyle(.segmented)
+                    .disabled(vm.isAnalyzing)
+                } footer: {
+                    Text(vm.engine == .yolo
+                         ? "YOLO detects each socket and port, then fixed rules compare them with the checklist. 5 MB one-time download, runs in milliseconds."
+                         : "Gemma looks at the whole photo and writes the result itself. 3.9 GB one-time download.")
+                }
+                if vm.engine == .yolo {
+                    Section("Model") {
+                        row("Name", "YOLO26n · fine-tuned · 6 classes")
+                        row("Runtime", "Core ML · Vision · on-device")
+                        row("Release", ModelConfig.tag(.yolo))
+                        if let url = ModelStore.locate(.yolo) {
+                            row("Size", InspectionViewModel.format(bytes: ModelStore.fileSize(url)))
+                        }
+                        if vm.modelState == .ready {
+                            row("Load time", String(format: "%.2fs", vm.modelLoadTime))
+                        }
+                    }
+                } else {
                 Section("Model") {
                     row("Name", "Gemma 4 E2B · fine-tuned")
                     row("Runtime", "LiteRT-LM · on-device")
-                    row("Version", ModelConfig.version)
-                    if let url = ModelStore.locate() {
+                    row("Release", ModelConfig.tag(.gemma))
+                    if let url = ModelStore.locate(.gemma) {
                         row("Size", InspectionViewModel.format(bytes: ModelStore.fileSize(url)))
-                        row("Source", url == ModelStore.sideloadedURL ? "Copied via Finder"
-                            : url == ModelStore.installedURL ? "Downloaded" : "Bundled in app")
+                        row("Source", url == ModelStore.sideloadedURL ? "Copied via Finder" : "GitHub release")
                     }
                     if vm.modelState == .ready {
                         row("Load time", String(format: "%.1fs", vm.modelLoadTime))
@@ -63,11 +88,12 @@ struct InfoSheet: View {
                     // Không có entitlement increased-memory-limit thì con số này thấp hơn hẳn (~1–2 GB sau khi load model)
                     row("Free app memory", InspectionViewModel.format(bytes: Int64(os_proc_available_memory())))
                 }
+                }
                 Section {
                     Button("Re-download model", role: .destructive) { confirmRedownload = true }
                         .disabled(vm.isAnalyzing)
                 } footer: {
-                    Text("Photos never leave this device. The model only evaluates photos — notes are kept in the history but not sent to the model.")
+                    Text("Models are downloaded from the project's GitHub releases. Photos never leave this device — notes are kept in the history but not sent to the model.")
                 }
             }
             .navigationTitle("About")

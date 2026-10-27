@@ -1,0 +1,12 @@
+# Xcode project được sinh bởi xcodegen từ project.yml
+*.xcworkspace/
+DerivedData/
+build/
+xcuserdata/
+
+# Model (3.86 GB) — không commit, app tải OTA hoặc copy qua Finder
+Model/*.litertlm
+*.litertlm
+*.xnnpack_cache
+
+.DS_Store

@@ -16,10 +16,7 @@ targets:
       - path: NetworkChecker
       - path: prompt.txt
         buildPhase: resources
-      # Muốn bundle model sẵn vào app thay vì tải OTA (~3.6 GB, chỉ cho dev build):
-      #   copy model.litertlm vào Model/ rồi bỏ comment 2 dòng dưới, chạy lại xcodegen
-      # - path: Model/model.litertlm
-      #   buildPhase: resources
+      # Model không nằm trong app: lần đầu mở app tải từ GitHub release (xem README › Models).
     dependencies:
       - package: LiteRTLM
         product: LiteRTLM
@@ -35,14 +32,11 @@ targets:
       properties:
         CFBundleDisplayName: Install Checker
         UILaunchScreen: {}
-        # Model OTA: link tải trực tiếp .litertlm (không auth). Tăng ModelVersion khi upload bản mới.
-        # Hiện tại: tải từ Mac qua Wi-Fi (xem README › Model). Đổi tên host nếu dùng Mac khác.
-        ModelDownloadURL: "http://Dans-MacBook-Pro.local:8000/model.litertlm"
-        ModelVersion: "2"
-        # Cho phép HTTP thường chỉ trong mạng LAN (IP nội bộ, *.local) để tải model từ Mac
-        NSAppTransportSecurity:
-          NSAllowsLocalNetworking: true
-        NSLocalNetworkUsageDescription: Tải model từ máy Mac trong cùng mạng Wi-Fi.
+        # Model tải từ GitHub release (repo public, không cần auth). Mỗi release có asset manifest.json.
+        # Đổi tag khi phát hành model mới -> app tự xoá bản cũ và tải bản mới.
+        ModelReleaseBaseURL: "https://github.com/duongntb94/install-checker-ios/releases/download"
+        GemmaModelTag: "model-v2"
+        YOLOModelTag: "yolo-v1"
         NSCameraUsageDescription: Chụp ảnh setup mạng để kiểm tra lỗi lắp đặt.
         NSPhotoLibraryUsageDescription: Chọn ảnh setup mạng để kiểm tra.
         # Cho phép copy model.litertlm vào app qua Finder / Files

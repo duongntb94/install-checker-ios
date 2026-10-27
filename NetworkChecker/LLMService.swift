@@ -9,7 +9,7 @@ actor LLMService {
         var errorDescription: String? {
             switch self {
             case .modelNotFound:
-                return "Không tìm thấy model.litertlm. Tải OTA lại hoặc copy file vào app qua Finder (Files › Install Checker)."
+                return "Không tìm thấy model.litertlm. Tải lại từ GitHub (màn Info) hoặc copy file vào app qua Finder (Files › Install Checker)."
             case .notLoaded:
                 return "Model chưa được load."
             }
@@ -22,7 +22,7 @@ actor LLMService {
 
     func load() async throws {
         guard engine == nil else { return }
-        guard let url = ModelStore.locate() else { throw LLMError.modelNotFound }
+        guard let url = ModelStore.locate(.gemma) else { throw LLMError.modelNotFound }
 
         let cacheDir = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)[0]
             .appendingPathComponent("litertlm", isDirectory: true)
