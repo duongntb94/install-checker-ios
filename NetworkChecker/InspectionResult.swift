@@ -2,9 +2,13 @@ import Foundation
 
 /// Output của model. Toạ độ x, y: 0–1000 theo chiều rộng / cao ảnh. r: 0–1000 theo cạnh dài.
 struct InspectionResult: Codable, Equatable {
+    /// "pass" | "fail" | "uncertain" (ảnh không thấy đủ hộp -> không kết luận, xem `note`).
     var status: String
     var errors: [InstallError]
+    /// Lý do khi status = "uncertain", ví dụ "Retake the photo…".
+    var note: String? = nil
 
+    var isUncertain: Bool { status.lowercased() == "uncertain" }
     var passed: Bool { status.lowercased() == "pass" && errors.isEmpty }
 
     struct InstallError: Codable, Equatable, Identifiable {

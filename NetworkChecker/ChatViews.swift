@@ -100,10 +100,14 @@ struct ResultCard: View {
                 Text("Checking…").font(.subheadline.weight(.semibold)).foregroundStyle(.white)
             }
         case .done(let r):
-            r.passed
-                ? badge("PASS", icon: "checkmark.seal.fill", color: Theme.pass)
-                : badge("FAIL · \(r.errors.count) issue\(r.errors.count == 1 ? "" : "s")",
+            if r.isUncertain {
+                badge("UNCERTAIN", icon: "questionmark.circle.fill", color: .yellow)
+            } else if r.passed {
+                badge("PASS", icon: "checkmark.seal.fill", color: Theme.pass)
+            } else {
+                badge("FAIL · \(r.errors.count) issue\(r.errors.count == 1 ? "" : "s")",
                         icon: "exclamationmark.triangle.fill", color: Theme.fail)
+            }
         case .failed:
             badge("Error", icon: "xmark.octagon.fill", color: .orange)
         }
@@ -123,7 +127,19 @@ struct ResultCard: View {
         case .queued, .analyzing:
             EmptyView()
         case .done(let r):
-            if r.passed {
+            if r.isUncertain {
+                Label(r.note ?? "Not sure this photo shows the setup. Retake the photo.",
+                      systemImage: "camera.viewfinder")
+                    .foregroundStyle(.yellow)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(10)
+                    .background(RoundedRectangle(cornerRadius: 10).fill(Color.yellow.opacity(0.12)))
+                VStack(spacing: 8) {
+                    ForEach(Array(r.errors.enumerated()), id: \.offset) { i, e in
+                        issueRow(i, e)
+                    }
+                }
+            } else if r.passed {
                 Text("Setup matches the checklist. No issues found.")
                     .foregroundStyle(.white.opacity(0.85))
             } else {

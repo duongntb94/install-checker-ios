@@ -16,6 +16,10 @@ enum InstallRules {
     static let expectedSockets = ["adapter", "empty_socket", "power_plug", "power_plug"]
     static let ordinal = ["first", "second", "third", "fourth"]
     static let want = ["adapter": "power adapter", "power_plug": "power plug", "empty_socket": "socket left empty"]
+    static let dataClasses: Set<String> = ["lan_cable", "extra_cable", "empty_port"]
+    static let notABox = "This photo does not look like the desk power/data box. Retake the photo with the whole box in view."
+    static let socketsNotFound = "Could not see all 4 power sockets. Retake the photo with the whole power strip in view."
+    static let portsNotFound = "Could not see the data ports. Retake the photo with both data ports in view."
 
     static func evaluate(_ dets: [Detection], imageSize: CGSize) -> InspectionResult {
         var errors: [InspectionResult.InstallError] = []
@@ -27,13 +31,18 @@ enum InstallRules {
                          r: Double(r / max(w, h) * 1000), desc: desc)
         }
 
+        let data = dets.filter { dataClasses.contains($0.label) }
         var sockets = dets.filter { socketClasses.contains($0.label) }.sorted { $0.box.midX < $1.box.midX }
         if sockets.count > 4 {
             sockets = Array(sockets.sorted { $0.confidence > $1.confidence }.prefix(4)).sorted { $0.box.midX < $1.box.midX }
         }
+        // Không thấy gì của hộp -> không phải ảnh setup: không kết luận.
+        if sockets.isEmpty && data.isEmpty {
+            return InspectionResult(status: "uncertain", errors: [], note: notABox)
+        }
+        var notes: [String] = []
         if sockets.count < 4 {
-            errors.append(.init(x: 500, y: 500, r: 400,
-                                desc: "Could not see all 4 power sockets. Retake the photo with the whole power strip in view."))
+            notes.append(socketsNotFound)
         } else {
             for (i, (det, wanted)) in zip(sockets, expectedSockets).enumerated() where det.label != wanted {
                 let desc: String
@@ -51,16 +60,20 @@ enum InstallRules {
             }
         }
 
+        if data.isEmpty { notes.append(portsNotFound) }
         let lan = dets.filter { $0.label == "lan_cable" }
         let extra = dets.filter { $0.label == "extra_cable" }
         let ports = dets.filter { $0.label == "empty_port" }.sorted { $0.box.minX < $1.box.minX }
         let noLan = "No LAN cable connected. Plug the yellow LAN cable into the left data port."
-        if lan.isEmpty {
+        if !data.isEmpty && lan.isEmpty {
             if let p = ports.first { errors.append(circle(p, noLan)) }
             else { errors.append(.init(x: 750, y: 600, r: 120, desc: noLan)) }
         }
         for d in extra {
             errors.append(circle(d, "Extra grey cable in the right data port. Only the yellow LAN cable in the left port is allowed. Unplug the grey cable."))
+        }
+        if !notes.isEmpty {
+            return InspectionResult(status: "uncertain", errors: errors, note: notes.joined(separator: " "))
         }
         return InspectionResult(status: errors.isEmpty ? "pass" : "fail", errors: errors)
     }
