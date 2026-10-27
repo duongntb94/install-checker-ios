@@ -9,7 +9,7 @@ On-device AI that checks a photo of a desk power/data box and answers **PASS / F
 
 On the 9 demo photos: YOLO finds 14/14 issues, Gemma (8-bit) 12/14.
 
-Slides: [`docs/presentation.pdf`](docs/presentation.pdf) (Gemma) · [`docs/yolo_presentation.pdf`](docs/yolo_presentation.pdf) (YOLO)
+Slides: [`docs/presentation.pdf`](docs/presentation.pdf)
 
 ## Requirements
 - Xcode 26+ (tested with Xcode 27.1), iOS 17+, iPhone with 8 GB RAM (tested on iPhone 15 Pro)
