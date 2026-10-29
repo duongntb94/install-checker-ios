@@ -45,6 +45,14 @@ struct InfoSheet: View {
     @Environment(\.dismiss) private var dismiss
     @State private var confirmRedownload = false
 
+    private var engineFooter: String {
+        switch vm.engine {
+        case .yolo: "YOLO detects each socket and port, then fixed rules compare them with the checklist. 5 MB one-time download, runs in milliseconds."
+        case .detr: "RF-DETR (Apache-2.0) detects each socket and port, then the same rules compare them with the checklist. 52 MB one-time download."
+        case .gemma: "Gemma looks at the whole photo and writes the result itself. 3.9 GB one-time download."
+        }
+    }
+
     var body: some View {
         NavigationStack {
             List {
@@ -57,16 +65,16 @@ struct InfoSheet: View {
                     .pickerStyle(.segmented)
                     .disabled(vm.isAnalyzing)
                 } footer: {
-                    Text(vm.engine == .yolo
-                         ? "YOLO detects each socket and port, then fixed rules compare them with the checklist. 5 MB one-time download, runs in milliseconds."
-                         : "Gemma looks at the whole photo and writes the result itself. 3.9 GB one-time download.")
+                    Text(engineFooter)
                 }
-                if vm.engine == .yolo {
+                if vm.engine.usesRules {
                     Section("Model") {
-                        row("Name", "YOLO26n · fine-tuned · 6 classes")
-                        row("Runtime", "Core ML · Vision · on-device")
-                        row("Release", ModelConfig.tag(.yolo))
-                        if let url = ModelStore.locate(.yolo) {
+                        row("Name", vm.engine == .yolo ? "YOLO26n · fine-tuned · 6 classes"
+                                                       : "RF-DETR Nano · fine-tuned · 6 classes")
+                        row("Runtime", vm.engine == .yolo ? "Core ML · Vision · on-device" : "Core ML fp16 · on-device")
+                        row("License", vm.engine == .yolo ? "AGPL-3.0 (Ultralytics)" : "Apache-2.0 (Roboflow)")
+                        row("Release", ModelConfig.tag(vm.engine.kind))
+                        if let url = ModelStore.locate(vm.engine.kind) {
                             row("Size", InspectionViewModel.format(bytes: ModelStore.fileSize(url)))
                         }
                         if vm.modelState == .ready {

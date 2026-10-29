@@ -6,7 +6,7 @@ import Foundation
 /// 1. tải `manifest.json` của release,
 /// 2. tải lần lượt từng asset (vẫn chạy khi app vào nền, resume được khi mất mạng),
 /// 3. ghép các phần theo `target`, kiểm tra SHA-256,
-/// 4. cài vào ModelStore (YOLO: compile .mlpackage -> .mlmodelc trên máy).
+/// 4. cài vào ModelStore (YOLO / RF-DETR: compile .mlpackage -> .mlmodelc trên máy).
 final class ModelDownloader: NSObject, URLSessionDownloadDelegate, @unchecked Sendable {
     enum Event {
         case progress(received: Int64, total: Int64)
@@ -17,8 +17,15 @@ final class ModelDownloader: NSObject, URLSessionDownloadDelegate, @unchecked Se
 
     static let gemma = ModelDownloader(kind: .gemma)
     static let yolo = ModelDownloader(kind: .yolo)
-    static func shared(_ kind: ModelKind) -> ModelDownloader { kind == .gemma ? gemma : yolo }
-    static var all: [ModelDownloader] { [gemma, yolo] }
+    static let detr = ModelDownloader(kind: .detr)
+    static func shared(_ kind: ModelKind) -> ModelDownloader {
+        switch kind {
+        case .gemma: gemma
+        case .yolo: yolo
+        case .detr: detr
+        }
+    }
+    static var all: [ModelDownloader] { [gemma, yolo, detr] }
 
     let kind: ModelKind
     var sessionID: String { "com.dan.poc.NetworkChecker.download.\(kind.rawValue)" }
@@ -203,13 +210,12 @@ final class ModelDownloader: NSObject, URLSessionDownloadDelegate, @unchecked Se
             }
 
             let source: URL
-            switch kind {
-            case .gemma:
-                source = out.appendingPathComponent("model.litertlm")
-            case .yolo:
-                // .mlpackage -> .mlmodelc (compile trên máy, vài trăm ms)
-                let package = out.appendingPathComponent("NetworkChecker.mlpackage")
+            if let name = kind.coreMLName {
+                // YOLO / RF-DETR: .mlpackage -> .mlmodelc (compile trên máy, vài trăm ms tới vài giây)
+                let package = out.appendingPathComponent("\(name).mlpackage")
                 source = try MLModel.compileModel(at: package)
+            } else {
+                source = out.appendingPathComponent("model.litertlm")
             }
             try ModelStore.install(kind, from: source, version: m.version)
             try? fm.removeItem(at: staging)

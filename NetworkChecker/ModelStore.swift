@@ -1,8 +1,17 @@
 import Foundation
 
-/// Hai model của app. Mỗi model nằm trong 1 GitHub release riêng.
+/// Các model của app. Mỗi model nằm trong 1 GitHub release riêng.
 enum ModelKind: String, CaseIterable, Sendable {
-    case gemma, yolo
+    case gemma, yolo, detr
+
+    /// Model Core ML (.mlpackage trong release, compile thành .mlmodelc trên máy). Gemma là .litertlm.
+    var coreMLName: String? {
+        switch self {
+        case .gemma: nil
+        case .yolo: "NetworkChecker"
+        case .detr: "RFDETR"
+        }
+    }
 }
 
 /// `manifest.json` đính kèm mỗi GitHub release — mô tả các asset cần tải và cách ghép lại.
@@ -36,6 +45,7 @@ enum ModelConfig {
         switch kind {
         case .gemma: info("GemmaModelTag") ?? "model-v2"
         case .yolo: info("YOLOModelTag") ?? "yolo-v1"
+        case .detr: info("DETRModelTag") ?? "detr-v1"
         }
     }
 
@@ -47,7 +57,11 @@ enum ModelConfig {
 
     /// Chỉ để hiển thị / kiểm tra dung lượng trước khi có manifest.
     static func approxBytes(_ kind: ModelKind) -> Int64 {
-        kind == .gemma ? 3_900_000_000 : 5_100_000
+        switch kind {
+        case .gemma: 3_900_000_000
+        case .yolo: 5_100_000
+        case .detr: 54_000_000
+        }
     }
 
     private static func info(_ key: String) -> String? {
@@ -72,8 +86,13 @@ enum ModelStore {
     /// Gemma: file .litertlm đã ghép đủ 3 phần.
     static var gemmaURL: URL { directory(.gemma).appendingPathComponent("model.litertlm") }
 
-    /// YOLO: model Core ML đã compile trên máy (.mlmodelc là thư mục).
-    static var yoloCompiledURL: URL { directory(.yolo).appendingPathComponent("NetworkChecker.mlmodelc") }
+    /// YOLO / RF-DETR: model Core ML đã compile trên máy (.mlmodelc là thư mục).
+    static func compiledURL(_ kind: ModelKind) -> URL {
+        directory(kind).appendingPathComponent("\(kind.coreMLName ?? kind.rawValue).mlmodelc")
+    }
+
+    /// Nơi model của `kind` được cài (file .litertlm hoặc thư mục .mlmodelc).
+    static func installURL(_ kind: ModelKind) -> URL { kind == .gemma ? gemmaURL : compiledURL(kind) }
 
     /// Bản Gemma copy tay qua Finder (Files › Install Checker) — tiện khi dev, ưu tiên hơn bản tải về.
     static var sideloadedURL: URL {
@@ -91,14 +110,14 @@ enum ModelStore {
     /// URL model đang dùng được, hoặc nil nếu cần tải (chưa có / khác tag trong Info.plist).
     static func locate(_ kind: ModelKind) -> URL? {
         if kind == .gemma, fm.fileExists(atPath: sideloadedURL.path) { return sideloadedURL }
-        let url = kind == .gemma ? gemmaURL : yoloCompiledURL
+        let url = installURL(kind)
         guard fm.fileExists(atPath: url.path), installedVersion(kind) == ModelConfig.tag(kind) else { return nil }
         return url
     }
 
     /// Chuyển file/thư mục đã ghép + kiểm tra vào chỗ cố định và ghi version.
     static func install(_ kind: ModelKind, from source: URL, version: String) throws {
-        let dest = kind == .gemma ? gemmaURL : yoloCompiledURL
+        let dest = installURL(kind)
         try fm.createDirectory(at: dest.deletingLastPathComponent(), withIntermediateDirectories: true)
         if fm.fileExists(atPath: dest.path) { try fm.removeItem(at: dest) }
         try fm.moveItem(at: source, to: dest)

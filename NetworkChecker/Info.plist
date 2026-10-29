@@ -36,5 +36,7 @@
 	<dict/>
 	<key>YOLOModelTag</key>
 	<string>yolo-v1</string>
+	<key>DETRModelTag</key>
+	<string>detr-v1</string>
 </dict>
 </plist>

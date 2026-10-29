@@ -37,6 +37,7 @@ targets:
         ModelReleaseBaseURL: "https://github.com/duongntb94/install-checker-ios/releases/download"
         GemmaModelTag: "model-v2"
         YOLOModelTag: "yolo-v1"
+        DETRModelTag: "detr-v1"
         NSCameraUsageDescription: Chụp ảnh setup mạng để kiểm tra lỗi lắp đặt.
         NSPhotoLibraryUsageDescription: Chọn ảnh setup mạng để kiểm tra.
         # Cho phép copy model.litertlm vào app qua Finder / Files

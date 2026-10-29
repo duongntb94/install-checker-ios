@@ -29,15 +29,31 @@ struct Attachment: Identifiable {
     let image: UIImage
 }
 
-/// Engine kiểm tra ảnh. Cả hai model đều tải từ GitHub release lần đầu mở app.
-/// YOLO: Core ML ~5 MB (release `yolo-v*`). Gemma: LiteRT-LM ~3.9 GB (release `model-v*`).
+/// Engine kiểm tra ảnh. Mọi model đều tải từ GitHub release lần đầu chọn engine.
+/// YOLO: Core ML ~5 MB (release `yolo-v*`). RF-DETR: Core ML fp16 ~52 MB (release `detr-v*`).
+/// Gemma: LiteRT-LM ~3.9 GB (release `model-v*`).
 enum InspectionEngine: String, CaseIterable, Identifiable {
-    case yolo, gemma
+    case yolo, detr, gemma
     var id: String { rawValue }
-    var title: String { self == .yolo ? "YOLO26n + rules" : "Gemma 4 E2B" }
-    var kind: ModelKind { self == .yolo ? .yolo : .gemma }
-    /// Cạnh dài ảnh đưa vào model — khớp lúc train (YOLO: yolo/src 1280, Gemma: prepare_dataset 896).
-    var maxSide: CGFloat { self == .yolo ? 1280 : 896 }
+    /// Tên ngắn cho segmented picker.
+    var title: String {
+        switch self {
+        case .yolo: "YOLO"
+        case .detr: "RF-DETR"
+        case .gemma: "Gemma"
+        }
+    }
+    var kind: ModelKind {
+        switch self {
+        case .yolo: .yolo
+        case .detr: .detr
+        case .gemma: .gemma
+        }
+    }
+    /// Engine "detect box + InstallRules" (không phải LLM).
+    var usesRules: Bool { self != .gemma }
+    /// Cạnh dài ảnh đưa vào model — khớp lúc train (YOLO/RF-DETR: yolo/src 1280, Gemma: prepare_dataset 896).
+    var maxSide: CGFloat { usesRules ? 1280 : 896 }
 }
 
 @MainActor
@@ -70,7 +86,7 @@ final class InspectionViewModel {
         InspectionEngine(rawValue: UserDefaults.standard.string(forKey: "inspectionEngine") ?? "") ?? .yolo
 
     private let llm = LLMService()
-    private var detector: YOLODetector?
+    private var detector: (any ObjectDetector)?
     private var downloader: ModelDownloader { ModelDownloader.shared(engine.kind) }
     private var speedSample: (date: Date, bytes: Int64)?
 
@@ -112,6 +128,7 @@ final class InspectionViewModel {
         guard new != engine, !isAnalyzing else { return }
         if case .downloading = modelState { downloader.pause() }   // tạm dừng model đang tải dở
         engine = new
+        detector = nil   // YOLO và RF-DETR dùng chung biến detector
         UserDefaults.standard.set(new.rawValue, forKey: "inspectionEngine")
         attachments = []
         await start()
@@ -121,7 +138,7 @@ final class InspectionViewModel {
     func redownloadModel() async {
         switch engine {
         case .gemma: await llm.unload()
-        case .yolo: detector = nil
+        case .yolo, .detr: detector = nil
         }
         await downloader.reset()
         ModelStore.remove(engine.kind)
@@ -164,6 +181,11 @@ final class InspectionViewModel {
                 if detector == nil {
                     let url = ModelStore.locate(.yolo)
                     detector = try await Task.detached { try YOLODetector(modelURL: url) }.value
+                }
+            case .detr:
+                if detector == nil {
+                    let url = ModelStore.locate(.detr)
+                    detector = try await Task.detached { try DETRDetector(modelURL: url) }.value
                 }
             }
             modelLoadTime = Date().timeIntervalSince(t0)
@@ -210,7 +232,7 @@ final class InspectionViewModel {
         let image = turns[ti].checks[ci].image
         let t0 = Date()
         var check = turns[ti].checks[ci]
-        if engine == .yolo {
+        if engine.usesRules {
             do {
                 guard let detector else { throw YOLODetector.DetectorError.modelNotFound }
                 let dets = try await Task.detached { try detector.detect(image) }.value
